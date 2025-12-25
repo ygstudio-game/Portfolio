@@ -1,0 +1,141 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Poppins:wght@400;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap");
+
+:root {
+  color-scheme: dark;
+
+  /* ✅ custom colors here */
+  --primary: #0d0f12;
+  --secondary: #1a1a1a;
+  --accent-blue: #3b82f6;
+  --accent-purple: #a855f7;
+  --accent-pink: #ec4899;
+}
+
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  outline: none;
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes gridMove {
+  from { background-position-y: 0; }
+  to { background-position-y: 50px; }
+}
+:root {
+  --primary: #fafafa;
+  --secondary: #f5f5f5;
+  --tertiary: #efefef;
+
+  --accent-yellow: #fcd34d;
+  --accent-gold: #f59e0b;
+  --accent-light: #fef3c7;
+  --accent-pale: #fef9e7;
+
+  --dark-primary: #1a1a1a;
+  --dark-secondary: #404040;
+  --dark-tertiary: #6b7280;
+}
+
+@layer base {
+  * {
+    @apply m-0 p-0 box-border;
+  }
+
+  body {
+    color: var(--dark-primary);
+    font-family: 'Inter', sans-serif;
+    @apply overflow-x-hidden;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .gradient-text-yellow {
+    background: linear-gradient(
+      to right,
+      var(--accent-gold),
+      var(--accent-yellow),
+      var(--accent-gold)
+    );
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .gradient-bg-yellow {
+    background: linear-gradient(
+      to bottom right,
+      color-mix(in srgb, var(--accent-yellow) 10%, transparent),
+      color-mix(in srgb, var(--accent-light) 5%, transparent),
+      transparent
+    );
+  }
+
+  .glass-light {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(14px);
+    border: 1px solid color-mix(in srgb, var(--accent-light) 20%, transparent);
+  }
+
+  .card-light {
+    background: white;
+    border: 1px solid rgba(210, 210, 210, 0.5);
+    transition: 0.3s;
+  }
+
+  .card-light:hover {
+    border-color: var(--accent-yellow);
+  }
+
+  .shadow-yellow {
+    box-shadow: 0 10px 30px color-mix(in srgb, var(--accent-yellow) 10%, transparent);
+  }
+
+  .button-yellow {
+    background: linear-gradient(to right, var(--accent-yellow), var(--accent-gold));
+    color: var(--dark-primary);
+    @apply px-6 py-3 rounded-full font-semibold transition-all duration-300;
+  }
+
+  .button-yellow:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px color-mix(in srgb, var(--accent-yellow) 15%, transparent);
+  }
+
+  .button-outline-yellow {
+    border: 2px solid var(--accent-yellow);
+    color: var(--accent-gold);
+    @apply px-6 py-3 rounded-full font-semibold transition-all duration-300;
+  }
+
+  .button-outline-yellow:hover {
+    background-color: var(--accent-pale);
+  }
+}
+@keyframes scroll-left {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scroll-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}

@@ -1,0 +1,143 @@
+/* src/components/features/CircularScrollProgress.css */
+.circular-scroll-progress {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9998;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.circular-scroll-progress:hover {
+  transform: scale(1.1);
+}
+
+.circular-scroll-progress:active {
+  transform: scale(0.95);
+}
+
+/* Glass morphism background */
+.progress-glass-bg {
+  position: absolute;
+  inset: -4px;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 50%;
+  border: 1px solid rgba(252, 211, 77, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(252, 211, 77, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  z-index: -1;
+  transition: all 0.3s ease;
+}
+
+.circular-scroll-progress:hover .progress-glass-bg {
+  background: rgba(255, 255, 255, 0.5);
+  border-color: rgba(252, 211, 77, 0.5);
+  box-shadow: 
+    0 12px 40px rgba(252, 211, 77, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+  filter: drop-shadow(0 0 6px rgba(252, 211, 77, 0.4));
+}
+
+.progress-ring-bg {
+  stroke: rgba(252, 211, 77, 0.15);
+  transition: stroke 0.3s ease;
+}
+
+.circular-scroll-progress:hover .progress-ring-bg {
+  stroke: rgba(252, 211, 77, 0.25);
+}
+
+.progress-ring-circle {
+  stroke: url(#yellowGradient);
+  transition: stroke-dashoffset 0.15s ease;
+  filter: url(#glow);
+}
+
+.progress-text {
+  position: absolute;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #404040;
+  font-family: 'Fira Code', monospace;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: color 0.3s ease;
+}
+
+.circular-scroll-progress:hover .progress-text {
+  color: #f59e0b;
+}
+
+/* Up Arrow Icon */
+.progress-arrow {
+  position: absolute;
+  bottom: -24px;
+  color: #f59e0b;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.circular-scroll-progress:hover .progress-arrow {
+  opacity: 1;
+}
+
+/* Pulse animation on completion */
+@keyframes pulse-yellow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(252, 211, 77, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(252, 211, 77, 0);
+  }
+}
+
+.circular-scroll-progress[data-complete="true"] .progress-glass-bg {
+  animation: pulse-yellow 2s infinite;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .circular-scroll-progress {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 52px;
+    height: 52px;
+  }
+  
+  .progress-ring {
+    width: 52px;
+    height: 52px;
+  }
+  
+  .progress-text {
+    font-size: 0.625rem;
+  }
+
+  .progress-arrow {
+    bottom: -20px;
+  }
+}
+
+/* Hide on very small screens */
+@media (max-width: 480px) {
+  .circular-scroll-progress {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .progress-ring {
+    width: 48px;
+    height: 48px;
+  }
+}
