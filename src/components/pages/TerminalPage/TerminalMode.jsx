@@ -307,10 +307,10 @@ export default function TerminalMode() {
     digitSize: 1.2,
     timeScale: 0.08,
     pause: false,
-    scanlineIntensity: 1,
-    glitchAmount: 1,
-    flickerAmount: 1,
-    noiseAmp: 1,
+    scanlineIntensity:0,
+    glitchAmount: 0.1,
+    flickerAmount:0.1,
+    noiseAmp: 0,
     chromaticAberration: 0,
     dither: 0,
     curvature: 0.02,
@@ -833,6 +833,7 @@ export default function TerminalMode() {
           .terminal-exit-btn {
             padding: 0.375rem 0.75rem;
             font-size: 0.75rem;
+            background: var(--terminal-bg-secondary);
           }
 
           .text-xs {

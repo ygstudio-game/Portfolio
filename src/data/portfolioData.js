@@ -82,7 +82,7 @@ projects: [
       "Invoice and payment handling"
     ],
     githubLink: "https://github.com/ygstudio-game/Printly", 
-    liveLink: "",  
+    liveLink: "https://printlyapp.vercel.app/",  
     category: "Desktop and Web App"
   },
   {

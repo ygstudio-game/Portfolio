@@ -59,17 +59,18 @@ const Projects = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 h-full w-full max-w-7xl mx-auto">
           {/* Left Column */}
           <div className="relative flex flex-col justify-center p-8 md:p-16 border-r border-black/10">
-            {/* Pagination Bars */}
-            <div className="absolute top-16 left-8 md:left-16 flex space-x-2 z-20">
-              {projects.map((_, index) => (
-                <div
-                  key={index}
-                  className={`h-1 rounded-full transition-all duration-500 ease-in-out ${
-                    index === activeIndex ? 'w-12 bg-black/80' : 'w-6 bg-black/20'
-                  }`}
-                />
-              ))}
-            </div>
+{/* Pagination Bars */}
+<div className="flex space-x-2 z-20 mb-8 md:mb-12 md:absolute md:top-28 md:left-16">
+  {projects.map((_, index) => (
+    <div
+      key={index}
+      className={`h-1 rounded-full transition-all duration-500 ease-in-out ${
+        index === activeIndex ? 'w-12 bg-black/80' : 'w-6 bg-black/20'
+      }`}
+    />
+  ))}
+</div>
+
 
             {/* Project Info */}
             <div className="relative h-auto w-full">

@@ -1,32 +1,29 @@
 import { Canvas, useFrame } from '@react-three/fiber'
-import { useRef, useEffect, useMemo } from 'react'
+import { useRef, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Text, Float } from '@react-three/drei'
-import { gsap } from 'gsap'
-import * as THREE from 'three'
+import { Float, Environment } from '@react-three/drei'
 import LightRays from './LightRays'
 import CelestialOrbHero from './CelestialOrbCanvas'
-
-// 3D PARTICLE COMPONENT
-
-function ParticleField({ count = 2000 }) {
+import { useNavigate } from 'react-router-dom';
+// --- OPTIMIZED 3D PARTICLES (Mobile Performance Tuned) ---
+function ParticleField({ count = 1500 }) {
   const particles = useRef()
+   // Memoize positions to prevent recalculation on re-renders
   const positions = useMemo(() => {
     const arr = new Float32Array(count * 3)
     for (let i = 0; i < count * 3; i++) {
-      arr[i] = (Math.random() - 0.5) * 15
+      // Spread particles wider for better mobile coverage
+      arr[i] = (Math.random() - 0.5) * 20 
     }
     return arr
   }, [count])
 
   useFrame(({ clock }) => {
     if (!particles.current) return
-    const positions = particles.current.geometry.attributes.position.array
-    for (let i = 0; i < count * 3; i += 3) {
-      positions[i + 1] += Math.sin(clock.elapsedTime + i) * 0.002
-      positions[i + 0] += Math.cos(clock.elapsedTime + i) * 0.002
-    }
-    particles.current.geometry.attributes.position.needsUpdate = true
+    const time = clock.elapsedTime * 0.1
+    // Simple rotation is more performant than per-particle updates
+    particles.current.rotation.y = time
+    particles.current.rotation.z = time * 0.2
   })
 
   return (
@@ -40,188 +37,175 @@ function ParticleField({ count = 2000 }) {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.02}
-        color="#00ffea"
+        size={0.03}
+        color="#22d3ee" // Cyan-400
         transparent
-        opacity={0.6}
-        sizeAttenuation
+        opacity={0.4}
+        sizeAttenuation={true}
+        depthWrite={false}
       />
     </points>
   )
 }
 
-// FLOATING TEXT COMPONENT - Responsive
-function FloatingText() {
-  const textRef = useRef()
-
-  // Responsive font size based on viewport
-  const fontSize = typeof window !== 'undefined' && window.innerWidth < 768 ? 0.3 : 0.5
-  const position = typeof window !== 'undefined' && window.innerWidth < 768 ? [0, 1.5, -2] : [0, 2, -2]
-
+// --- INTERACTIVE CARD COMPONENT ---
+const PortfolioChoiceCard = ({ title, subtitle, mode, onClick, delay }) => {
+  const isTerminal = mode === 'terminal'
+  
   return (
-    <Float speed={2} rotationIntensity={0.9} floatIntensity={1}>
-      <Text
-        ref={textRef}
-        position={position}
-        fontSize={fontSize}
-        color="#00ffea"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={8}
-        textAlign="center"
-      >
-        Full-Stack Developer
-      </Text>
-    </Float>
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.8, type: "spring" }}
+      whileHover={{ y: -10, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={onClick}
+      className={`relative group overflow-hidden rounded-2xl border p-6 md:p-8 cursor-pointer w-full md:w-[320px] lg:w-[380px] h-[200px] md:h-[280px] flex flex-col justify-between transition-all duration-300
+        ${isTerminal 
+          ? 'bg-black/80 border-green-500/30 hover:border-green-400 hover:shadow-[0_0_40px_rgba(74,222,128,0.15)]' 
+          : 'bg-white/5 backdrop-blur-xl border-white/10 hover:border-cyan-400 hover:shadow-[0_0_40px_rgba(34,211,238,0.15)]'
+        }`}
+    >
+      {/* Background Gradient Effect */}
+      <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br 
+        ${isTerminal ? 'from-green-900/20 via-transparent' : 'from-cyan-900/20 via-transparent'}`} 
+      />
+
+      {/* Card Content */}
+      <div className="relative z-10">
+        <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono mb-4
+          ${isTerminal ? 'bg-green-900/30 text-green-400 border border-green-500/30' : 'bg-cyan-900/30 text-cyan-400 border border-cyan-500/30'}`}>
+          <span>{isTerminal ? 'root@system:~$' : 'UI/UX Mode'}</span>
+        </div>
+        
+        <h3 className={`text-2xl md:text-3xl font-bold mb-2 ${isTerminal ? 'text-green-50 font-mono' : 'text-white font-sans'}`}>
+          {title}
+        </h3>
+        <p className="text-gray-400 text-sm md:text-base leading-relaxed">
+          {subtitle}
+        </p>
+      </div>
+
+      {/* Call to Action Arrow */}
+      <div className={`relative z-10 flex items-center gap-2 text-sm font-semibold mt-4
+        ${isTerminal ? 'text-green-400' : 'text-cyan-400'}`}
+        
+        >
+        <span>LAUNCH</span>
+        <svg className="w-4 h-4 transform group-hover:translate-x-2 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </div>
+    </motion.div>
   )
 }
 
-// MAIN HERO SECTION - FIXED RESPONSIVE
-
+// --- MAIN RESPONSIVE HERO ---
 export default function HeroSection() {
-  const containerRef = useRef()
+  const scrollRef = useRef()
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    gsap.from('.hero-text', {
-      opacity: 0,
-      y: 100,
-      duration: 1.5,
-      stagger: 0.2,
-      ease: 'power4.out'
-    })
-    
-    gsap.to('.scroll-indicator', {
-      y: 20,
-      repeat: -1,
-      yoyo: true,
-      duration: 1.5,
-      ease: 'sine.inOut'
-    })
-  }, [])
+  const handleScrollDown = () => {
+    // Smooth scroll to the next section (PortfolioCards)
+    window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+  }
+
+  const navigateTo = (path) => {
+    console.log(`Navigate to ${path}`)
+      navigate(path);
+  }
 
   return (
     <section 
-      ref={containerRef} 
-      className="relative h-screen w-full bg-[#080412] overflow-hidden flex items-center justify-center"
-      style={{ 
-        position: 'relative',
-        touchAction: 'pan-y' // Prevent touch interference on mobile
-      }}
+      className="relative w-full min-h-[100dvh] bg-[#030014] overflow-hidden flex flex-col items-center justify-center pt-20 pb-10 md:py-0"
     >
-      {/* Layer 1: Celestial Orb Canvas Background (z-0) */}
-      <div 
-        className="absolute inset-0 w-full h-full"
-        style={{ 
-          zIndex: 0,
-          pointerEvents: 'none' // Prevent interaction
-        }}
-      >
+      {/* --- LAYER 1: 3D BACKGROUND (Pointer Events None for Scrolling) --- */}
+      <div className="absolute inset-0 z-0">
         <CelestialOrbHero />
       </div>
-
-      {/* Layer 2: 3D Particle Field (z-5) - FIXED */}
-      <div 
-        className="absolute inset-0 w-full h-full"
-        style={{ 
-          zIndex: 5,
-          pointerEvents: 'none' // Prevent interaction
-        }}
-      >
-        <Canvas 
-          camera={{ position: [0, 0, 8], fov: 60 }} 
-          className="absolute inset-0 w-full h-full"
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            pointerEvents: 'none' // Prevent canvas from capturing touches
-          }}
-          gl={{
-            alpha: true,
-            antialias: true,
-            powerPreference: 'high-performance'
-          }}
-        >
-          <ambientLight intensity={0.3} />
-          <pointLight position={[10, 10, 10]} color="#00ffea" intensity={1} />
-          
-          <ParticleField count={2000} />
-          
-          <FloatingText />
-        </Canvas>
-      </div>
       
-      {/* Layer 3: Light Rays Overlay (z-10) */}
-      <div 
-        className="absolute inset-0"
-        style={{ 
-          zIndex: 10,
-          pointerEvents: 'none'
-        }}
-      >
+      <div className="absolute inset-0 z-10 opacity-60 pointer-events-none">
         <LightRays
           raysOrigin="top-center"
-          raysColor="#00ffff"
-          raysSpeed={1}
-          lightSpread={1.4}
-          rayLength={1}
-          followMouse={true}
-          mouseInfluence={0.5}
-          noiseAmount={0.4}
-          distortion={0.05}
-          className="custom-rays"
+          raysColor="#4ade80"
+          raysSpeed={0.5}
         />
       </div>
 
-      {/* Layer 4: Foreground Text Content (z-20) - FIXED */}
-      <div 
-        className="relative w-full h-full flex flex-col items-center justify-center text-center px-4"
-        style={{ 
-          zIndex: 20,
-          pointerEvents: 'auto' // Allow interaction with text/buttons
-        }}
-      >
-        <motion.h1 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}      
-          className="hero-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 text-amber-100 bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500"
+      <div className="absolute inset-0 z-10 pointer-events-none">
+        <Canvas 
+          dpr={[1, 2]} // Optimization for high DPI screens
+          camera={{ position: [0, 0, 8], fov: 60 }}
+          gl={{ antialias: false }} // Performance boost
         >
-          Transformative Digital Experiences
-        </motion.h1>
-
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}        
-          className="hero-text text-base sm:text-lg md:text-xl lg:text-2xl font-mono text-cyan-300 max-w-2xl px-4" 
-        >
-          _{`<code magic & creative solutions in 3D space/>`}
-        </motion.p>
-
-        <motion.div 
-          className="scroll-indicator absolute bottom-8 md:bottom-16 flex flex-col items-center gap-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-        >
-          <div className="w-px h-8 md:h-12 bg-gradient-to-t from-cyan-400 to-transparent" />
-          <span className="text-cyan-300 text-xs md:text-sm font-mono tracking-widest">
-            EXPLORE PORTFOLIO
-          </span>
-        </motion.div>
+          <ParticleField count={1200} />
+        </Canvas>
       </div>
 
-      {/* Responsive Styles */}
-      <style jsx>{`
-        @media (max-width: 768px) {
-          canvas {
-            transform-origin: center center;
-          }
-        }
-      `}</style>
+      {/* --- LAYER 2: CONTENT (Pointer Events Auto) --- */}
+      <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-center gap-12 lg:gap-20">
+        
+        {/* Left/Top Column: Introduction Text */}
+        <div className="flex-1 text-center md:text-left pt-8 md:pt-0">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-cyan-400 font-mono tracking-widest text-sm md:text-base mb-4">
+              FULL STACK DEVELOPER PORTFOLIO
+            </h2>
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight mb-6">
+              Choose Your <br className="hidden md:block"/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400">
+                Experience
+              </span>
+            </h1>
+            <p className="text-gray-400 text-base sm:text-lg max-w-xl mx-auto md:mx-0 leading-relaxed mb-8">
+              Explore my digital universe through two distinct interfaces. 
+              Dive into the code via Terminal or enjoy the visual journey via Modern UI.
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Right/Bottom Column: The Cards */}
+        <div className="flex-1 w-full flex flex-col gap-6 items-center md:items-start lg:items-end justify-center">
+          
+          <PortfolioChoiceCard 
+            mode="terminal"
+            title="Terminal"
+            subtitle="Command Line Interface. Execute scripts, browse file systems, and view raw code."
+            onClick={() => navigateTo('/terminal')}
+            delay={0.2}
+          />
+          
+          <PortfolioChoiceCard 
+            mode="modern"
+            title="Modern UI"
+            subtitle="Immersive 3D Experience. Rich visuals, interactive galleries, and smooth motion."
+            onClick={() => navigateTo('/modern-ui')}
+            delay={0.4}
+          />
+
+        </div>
+      </div>
+
+      {/* --- LAYER 3: SCROLL INDICATOR --- */}
+      <motion.div 
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 cursor-pointer"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, y: [0, 10, 0] }}
+        transition={{ delay: 2, duration: 2, repeat: Infinity }}
+        onClick={handleScrollDown}
+      >
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-[10px] text-cyan-400 font-mono tracking-widest uppercase opacity-70">
+            More Projects
+          </span>
+          <div className="w-[1px] h-12 bg-gradient-to-b from-cyan-400 to-transparent"></div>
+        </div>
+      </motion.div>
+
     </section>
   )
 }

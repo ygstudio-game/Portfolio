@@ -4,7 +4,7 @@ import { ModernCard } from './ModernCard';
 
 export function PortfolioCards() {
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-20">
+    <div className="min-h-screen bg-[#040505] flex items-center justify-center px-6 py-20">
       <div className="max-w-7xl w-full">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
