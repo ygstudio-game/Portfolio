@@ -159,7 +159,7 @@ const Hero = () => {
   const [showSubtitle, setShowSubtitle] = useState(false);
   const { name } = portfolioData.personalInfo;
   const containerRef = useRef(null);
-  
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
@@ -486,6 +486,7 @@ const Hero = () => {
             <motion.button
               className="px-8 py-4 rounded-full bg-white border-2 border-yellow-300 text-gray-900 font-semibold hover:bg-yellow-50 transition-all duration-300 flex items-center gap-2"
               whileHover={{ scale: 1.05, y: -2 }}
+              onClick={() => window.open(`${BACKEND_URL}/api/resume`, '_blank')}
               whileTap={{ scale: 0.95 }}
             >
               <Download className="w-5 h-5" />
