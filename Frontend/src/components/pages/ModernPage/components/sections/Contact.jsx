@@ -6,6 +6,7 @@ import MagneticWrapper from '../features/MagneticWrapper';
 import { portfolioData } from '@/data/portfolioData'; // Ensure path is correct
 
 const Contact = () => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
   
@@ -100,7 +101,7 @@ const Contact = () => {
       try {
         // --- API CALL START ---
         // Replace with your actual backend URL if different
-        const response = await fetch('http://localhost:5000/api/contact', {
+        const response = await fetch(`${BACKEND_URL}/api/contact`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
