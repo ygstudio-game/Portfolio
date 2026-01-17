@@ -1,5 +1,5 @@
 // src/data/portfolioData.js
-
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 export const portfolioData = {
   personalInfo: {
     name: "Yadnyesh Borole",
@@ -19,7 +19,7 @@ export const portfolioData = {
       linkedin: "https://www.linkedin.com/in/yadnyesh-borole-51aa0532a/",
       instagram: "https://www.instagram.com/yadnyeshborole/",
     },
-    resume: "/Yadnyesh_Borole_Resume.pdf",
+resume: `${BACKEND_URL}/api/resume`,
   },
 
   aboutme: [

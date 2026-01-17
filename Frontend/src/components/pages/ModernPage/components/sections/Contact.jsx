@@ -1,9 +1,9 @@
 import React, { useRef, useState } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { Mail, MapPin, Phone, Send, Github, Linkedin, Twitter, Download, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, Github, Linkedin, Download, Sparkles, CheckCircle2 } from 'lucide-react';
 import { SiInstagram } from 'react-icons/si';
 import MagneticWrapper from '../features/MagneticWrapper';
-import { portfolioData } from '@data/portfolioData';
+import { portfolioData } from '@/data/portfolioData'; // Ensure path is correct
 
 const Contact = () => {
   const ref = useRef(null);
@@ -21,7 +21,7 @@ const Contact = () => {
   const [errors, setErrors] = useState({});
   const [isValid, setIsValid] = useState({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
-  const [formStatus, setFormStatus] = useState('idle');
+  const [formStatus, setFormStatus] = useState('idle'); // idle, loading, success, error
 
   // Validation functions
   const validateEmail = (email) => {
@@ -39,6 +39,7 @@ const Contact = () => {
         if (!validateEmail(value)) return "Please enter a valid e-mail address";
         return null;
       case 'subject':
+        // Subject is optional in API but required in UI if you prefer
         if (submitAttempted && !value.trim()) return "Please enter a subject!";
         return null;
       case 'message':
@@ -96,18 +97,46 @@ const Contact = () => {
     if (allValid) {
       setFormStatus('loading');
       
-      setTimeout(() => {
-        setFormStatus('success');
-        setFormData({ name: '', email: '', subject: '', message: '' });
-        setTouched({});
-        setErrors({});
-        setIsValid({});
-        setSubmitAttempted(false);
-        
-        setTimeout(() => {
-          setFormStatus('idle');
-        }, 3000);
-      }, 2000);
+      try {
+        // --- API CALL START ---
+        // Replace with your actual backend URL if different
+        const response = await fetch('http://localhost:5000/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            // You can append subject to message or backend can handle it separate
+            message: `Subject: ${formData.subject}\n\n${formData.message}`
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            setFormStatus('success');
+            setFormData({ name: '', email: '', subject: '', message: '' });
+            setTouched({});
+            setErrors({});
+            setIsValid({});
+            setSubmitAttempted(false);
+            
+            setTimeout(() => {
+              setFormStatus('idle');
+            }, 3000);
+        } else {
+            throw new Error(data.message || "Failed to send");
+        }
+        // --- API CALL END ---
+
+      } catch (error) {
+        console.error("Submission Error:", error);
+        setFormStatus('error');
+        // Reset to idle after error so they can try again
+        setTimeout(() => setFormStatus('idle'), 3000);
+      }
     }
   };
 
@@ -129,7 +158,7 @@ const Contact = () => {
     <section 
       id="contact" 
       ref={ref} 
-      className="relative py-20 px-4 bg-linear-to-b from-white via-yellow-50/30 to-white overflow-hidden"
+      className="relative py-20 px-4 bg-gradient-to-b from-white via-yellow-50/30 to-white overflow-hidden"
     >
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
@@ -437,7 +466,9 @@ const Contact = () => {
                     className={`w-full px-8 py-5 rounded-2xl text-lg font-bold flex items-center justify-center gap-3 transition-all duration-300 shadow-xl ${
                       formStatus === 'success'
                         ? 'bg-green-500 text-white'
-                        : 'bg-linear-to-r from-yellow-300 to-amber-400 text-gray-900 hover:from-yellow-400 hover:to-amber-500 hover:shadow-yellow-500/50'
+                        : formStatus === 'error'
+                        ? 'bg-red-500 text-white'
+                        : 'bg-gradient-to-r from-yellow-300 to-amber-400 text-gray-900 hover:from-yellow-400 hover:to-amber-500 hover:shadow-yellow-500/50'
                     }`}
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
@@ -453,6 +484,8 @@ const Contact = () => {
                       </>
                     ) : formStatus === 'success' ? (
                       '✓ Message Sent Successfully!'
+                    ) : formStatus === 'error' ? (
+                      '⚠ Error Sending. Try Again.'
                     ) : (
                       <>
                         Submit
@@ -497,7 +530,7 @@ const Contact = () => {
                       href={info.href}
                       className="flex items-center gap-4 p-5 rounded-2xl backdrop-blur-xl bg-white/70 border-2 border-yellow-200/50 hover:border-yellow-400/80 transition-all duration-300 shadow-lg hover:shadow-xl group"
                     >
-                      <div className="p-3 rounded-xl bg-linear-to-br from-yellow-100 to-amber-100 text-yellow-700 group-hover:scale-110 transition-transform">
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-100 to-amber-100 text-yellow-700 group-hover:scale-110 transition-transform">
                         <info.icon className="w-6 h-6" />
                       </div>
                       <div>
@@ -507,7 +540,7 @@ const Contact = () => {
                     </a>
                   ) : (
                     <div className="flex items-center gap-4 p-5 rounded-2xl backdrop-blur-xl bg-white/70 border-2 border-yellow-200/50 shadow-lg">
-                      <div className="p-3 rounded-xl bg-linear-to-br from-yellow-100 to-amber-100 text-yellow-700">
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-100 to-amber-100 text-yellow-700">
                         <info.icon className="w-6 h-6" />
                       </div>
                       <div>
