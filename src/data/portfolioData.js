@@ -160,7 +160,7 @@ projects: [
     tools: [
       { name: "Git", level: 90 },
       { name: "Docker", level: 40 },
-      { name: "AWS", level: 40 },
+      // { name: "AWS", level: 40 },
       { name: "Vercel", level: 90 }
     ]
   },

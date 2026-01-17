@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from '@react-three/fiber'
-import { useRef, useMemo, useState } from 'react'
+import { useRef, useMemo, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Float, Environment } from '@react-three/drei'
 import LightRays from './LightRays'
@@ -104,7 +104,8 @@ const PortfolioChoiceCard = ({ title, subtitle, mode, onClick, delay }) => {
 export default function HeroSection() {
   const scrollRef = useRef()
   const navigate = useNavigate();
-
+  const isMobile = window.innerWidth <= 768;
+ 
   const handleScrollDown = () => {
     // Smooth scroll to the next section (PortfolioCards)
     window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
@@ -120,10 +121,12 @@ export default function HeroSection() {
       className="relative w-full min-h-[100dvh] bg-[#030014] overflow-hidden flex flex-col items-center justify-center pt-20 pb-10 md:py-0"
     >
       {/* --- LAYER 1: 3D BACKGROUND (Pointer Events None for Scrolling) --- */}
-      <div className="absolute inset-0 z-0">
-        <CelestialOrbHero />
-      </div>
-      
+      {!isMobile && (
+        <div className="absolute inset-0 z-0">
+          <CelestialOrbHero />
+        </div>
+      )}
+
       <div className="absolute inset-0 z-10 opacity-60 pointer-events-none">
         <LightRays
           raysOrigin="top-center"

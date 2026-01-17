@@ -19,8 +19,7 @@ import Experience from './components/sections/Experience';
 import Contact from './components/sections/Contact';
 
 const ModernPage = () => {
-
- 
+const isMobile = window.innerWidth <= 768;
 
   return (
     <ReactLenis root>
@@ -50,7 +49,7 @@ const ModernPage = () => {
           { (
             <motion.div 
               className="fixed bottom-0 left-0 right-0 pointer-events-none z-50"
-              style={{ height: '8rem' }}
+              {...(isMobile ? { style: { height: '6rem' } } : { style: { height: '8rem' } })}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 30 }}

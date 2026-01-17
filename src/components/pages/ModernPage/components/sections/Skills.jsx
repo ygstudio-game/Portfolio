@@ -41,10 +41,13 @@ const Skills = () => {
     'Vercel': SiVercel,
   };
 
-  // Transform portfolio data into logo format with fallback icon
-  const transformSkillsToLogos = (skillsArray) => {
+const transformSkillsToLogos = (skillsArray) => {
+    // 1. Check if the array itself exists in portfolio data
+    if (!skillsArray) return [];
+
     return skillsArray
-      .filter(skill => iconMap[skill.name]) // Only include skills with icons
+      // 2. Filter: Check if skill exists, has a name, AND is in our iconMap
+      .filter(skill => skill && skill.name && iconMap[skill.name])
       .map(skill => {
         const Icon = iconMap[skill.name];
         return {
@@ -56,13 +59,20 @@ const Skills = () => {
       });
   };
 
-  // Get skills from portfolio data
-  const { frontend, backend, database, tools } = portfolioData.skills;
-
-  // Organize skills into rows - only skills with icons
-  const frontendLogos = transformSkillsToLogos(frontend);
-  const backendLogos = transformSkillsToLogos([...backend, ...database]);
-  const toolsLogos = transformSkillsToLogos(tools);
+  // Safely access skills from portfolio data (handle if 'skills' is undefined)
+  const skills = portfolioData.skills || {};
+  const { frontend, backend, database, tools } = skills;
+  // Organize skills into rows
+  // usage of ( || [] ) ensures we don't crash if that category is missing in data
+  const frontendLogos = transformSkillsToLogos(frontend || []);
+  
+  // Combine backend and database safely
+  const backendLogos = transformSkillsToLogos([
+    ...(backend || []), 
+    ...(database || [])
+  ]);
+  
+  const toolsLogos = transformSkillsToLogos(tools || []);
 
   const allSkills = [...frontendLogos, ...backendLogos, ...toolsLogos];
 

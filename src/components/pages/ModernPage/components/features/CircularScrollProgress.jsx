@@ -39,14 +39,16 @@ const CircularScrollProgress = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const radius = 22;
+  // Dimensions based on the 60x60 viewBox coordinate system
+  const radius = 22; 
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset =
-    circumference - (scrollPercentage / 100) * circumference;
+  const strokeDashoffset = circumference - (scrollPercentage / 100) * circumference;
+  const isComplete = scrollPercentage > 99;
 
   return (
     <motion.div
       className="circular-scroll-progress"
+      data-complete={isComplete}
       initial={{ opacity: 0, scale: 0.5 }}
       animate={{ 
         opacity: isVisible ? 1 : 0, 
@@ -59,7 +61,33 @@ const CircularScrollProgress = () => {
       {/* Glass background */}
       <div className="progress-glass-bg" />
       
-      <svg className="progress-ring" width="60" height="60">
+      {/* FIX: Removed fixed width/height="60". 
+         Added viewBox="0 0 60 60" and width/height="100%".
+         This allows the SVG to shrink perfectly when your CSS 
+         resizes the parent container on mobile.
+      */}
+      <svg 
+        className="progress-ring" 
+        viewBox="0 0 60 60"
+        width="100%"
+        height="100%"
+      >
+        <defs>
+          <linearGradient id="yellowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fcd34d" />
+            <stop offset="50%" stopColor="#f59e0b" />
+            <stop offset="100%" stopColor="#C3E41D" />
+          </linearGradient>
+          
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+
         {/* Background Circle */}
         <circle
           className="progress-ring-bg"
@@ -86,24 +114,6 @@ const CircularScrollProgress = () => {
           }}
           transition={{ duration: 0.1 }}
         />
-        
-        {/* Yellow gradient */}
-        <defs>
-          <linearGradient id="yellowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fcd34d" />
-            <stop offset="50%" stopColor="#f59e0b" />
-            <stop offset="100%" stopColor="#C3E41D" />
-          </linearGradient>
-          
-          {/* Glow filter */}
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
       </svg>
 
       {/* Percentage Text */}

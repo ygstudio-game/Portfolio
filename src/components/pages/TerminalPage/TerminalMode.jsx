@@ -299,28 +299,28 @@ export default function TerminalMode() {
   
   const [commandHistory, setCommandHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+ 
+const isMobile = window.innerWidth < 768;
 
-  // Fixed: Stable bgProps to prevent re-render
-  const bgProps = useMemo(() => ({
-    scale: 2,
-    gridMul: [1, 1],
+const bgProps = useMemo(() => ({
+    scale: isMobile ? 3 : 2,
+    gridMul: isMobile ? [1, 1] : [1, 1],
     digitSize: 1.2,
-    timeScale: 0.08,
+    timeScale: isMobile ? 0.05 : 0.08,
     pause: false,
-    scanlineIntensity:0,
-    glitchAmount: 0.1,
-    flickerAmount:0.1,
-    noiseAmp: 0,
+    scanlineIntensity: isMobile ? 0.1 : 0.3,
+    glitchAmount: isMobile ? 0.1 : 0.5,
+    flickerAmount: isMobile ? 0 : 0.1,
+    noiseAmp: isMobile ? 0.1 : 0.4,
     chromaticAberration: 0,
-    dither: 0,
-    curvature: 0.02,
+    dither: isMobile ? 0 : 0.2,
+    curvature: isMobile ? 0 : 0.02,  
     tint: "#feee66",
-    mouseReact: true,
+    mouseReact: !isMobile,          
     mouseStrength: 0.8,
-    pageLoadAnimation: true,
-    brightness: 0.08,
-  }), []); // Empty deps - never changes
-
+    pageLoadAnimation: !isMobile,
+    brightness: isMobile ? 0.8 : 0.2,
+}), [isMobile]);
   const terminalRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -577,7 +577,7 @@ export default function TerminalMode() {
         )}
       </div>
 
-      <style jsx>{`
+      <style >{`
         .terminal-container {
           --terminal-bg-primary: #0a0e1a;
           --terminal-bg-secondary: #151b2e;

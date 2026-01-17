@@ -29,7 +29,7 @@ export default function LandingPage() {
       <MouseSpy />
       <div ref={contentRef} className="w-full">
         <HeroSection />
-        <PortfolioCards />
+        {/* <PortfolioCards /> */}
       </div>
     </div>
   );
