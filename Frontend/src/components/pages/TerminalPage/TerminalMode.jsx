@@ -489,7 +489,7 @@ const bgProps = useMemo(() => ({
       onClick={handleContainerClick}
     >
       {/* Fixed: Background with fixed height to prevent reload */}
-      <div style={{ 
+      {isMobile ? <></> :   <div style={{ 
         width: '100vw',
         height: '100vh',
         position: 'fixed',
@@ -499,7 +499,9 @@ const bgProps = useMemo(() => ({
         zIndex: 0
       }}>
         <MemoizedTerminalBackground {...bgProps} />
-      </div>
+      </div> }
+    
+    
 
       {isMatrixMode && (
         <div className="matrix-overlay">

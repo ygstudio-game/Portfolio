@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import { ReactLenis } from 'lenis/react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -20,7 +19,6 @@ import Contact from './components/sections/Contact';
 
 const ModernPage = () => {
 const isMobile = window.innerWidth <= 768;
-
   return (
     <ReactLenis root>
       <div className="relative min-h-screen bg-white">
@@ -42,7 +40,7 @@ const isMobile = window.innerWidth <= 768;
         </main>
 
         {/* Footer */}
-        <Footer />
+        <Footer /> 
 
         {/* Fixed Bottom Blur - Shows after Hero */}
         <AnimatePresence>

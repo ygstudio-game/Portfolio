@@ -1,8 +1,7 @@
-import React from 'react';
 import { Timeline } from '@ui/Timeline';
 import { Briefcase, GraduationCap, Award, Code2, Zap, ChevronDown } from 'lucide-react';
 import { portfolioData } from '@data/portfolioData';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const Experience = () => {
   const { experience } = portfolioData;
