@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 export const downloadResume = (req, res) => {
   try {
     // Navigate up two levels (../../) from controllers folder to root, then into 'files'
-    const filePath = path.join(__dirname, "../files", "Resume.pdf");
+    const filePath = path.join(__dirname, "../files", "ResumeMay2026.pdf");
 
     res.download(filePath, "Yadnyesh_Borole_Resume.pdf", (err) => {
       if (err) {
